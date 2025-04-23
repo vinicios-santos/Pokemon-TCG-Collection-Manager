@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon TCG Card Viewer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --background-color: #f5f6fa;
+            --card-background: #ffffff;
+            --text-color: #2c3e50;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .search-section {
+            background-color: var(--card-background);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .card-preview {
+            background-color: var(--card-background);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .card-image {
+            max-width: 300px;
+            height: auto;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .card-image:hover {
+            transform: scale(1.05);
+        }
+
+        .card-info {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .collection-section {
+            background-color: var(--card-background);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .collection-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .collection-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .collection-card {
+            background-color: var(--card-background);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .collection-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .collection-card img {
+            width: 100%;
+            height: auto;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+
+        .collection-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .collection-card p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .remove-btn {
+            background-color: var(--accent-color);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .error {
+            color: var(--accent-color);
+            text-align: center;
+            padding: 1rem;
+            background-color: #fde8e8;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+        }
+
+        .success-message {
+            color: #27ae60;
+            text-align: center;
+            padding: 1rem;
+            background-color: #e8f8f0;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            input, button {
+                width: 100%;
+            }
+
+            .collection-list {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pokémon TCG Collection Manager</h1>
+        </header>
+
+        <section class="search-section">
+            <div class="search-form">
+                <input type="text" id="pokemonName" placeholder="Nome do Pokémon" required>
+                <input type="text" id="cardNumber" placeholder="Número da Carta" required>
+                <button onclick="searchCard()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Buscar Carta
+                </button>
+            </div>
+            <div class="card-preview" id="cardContainer">
+                <!-- O conteúdo será inserido aqui via JavaScript -->
+            </div>
+        </section>
+
+        <section class="collection-section">
+            <div class="collection-controls">
+                <button onclick="exportCollection()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Exportar Coleção
+                </button>
+                <input type="file" id="importFile" accept=".json" style="display: none" onchange="importCollection(event)">
+                <button onclick="document.getElementById('importFile').click()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Importar Coleção
+                </button>
+            </div>
+
+            <h2 style="text-align: center; margin-bottom: 1rem; color: var(--primary-color);">Minha Coleção</h2>
+            <div class="collection-list" id="collectionList">
+                <!-- As cartas da coleção serão inseridas aqui -->
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Carregar coleção do localStorage ao iniciar
+        let myCollection = JSON.parse(localStorage.getItem('pokemonCollection')) || [];
+        updateCollectionDisplay();
+
+        async function searchCard() {
+            const name = document.getElementById('pokemonName').value;
+            const number = document.getElementById('cardNumber').value;
+            const cardContainer = document.getElementById('cardContainer');
+
+            try {
+                const response = await fetch(`/search?name=${encodeURIComponent(name)}&number=${encodeURIComponent(number)}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    cardContainer.innerHTML = `<div class="error">${data.error}</div>`;
+                    return;
+                }
+
+                cardContainer.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <img src="${data.imageUrl}" alt="${data.name}" class="card-image">
+                        <div class="card-info">
+                            <h2 style="color: var(--primary-color); margin-bottom: 0.5rem;">${data.name}</h2>
+                            <p style="color: #666; margin-bottom: 1rem;">Número: ${data.number}</p>
+                            <button onclick="addToCollection(${JSON.stringify(data).replace(/"/g, '&quot;')})">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                Adicionar à Coleção
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                cardContainer.innerHTML = `<div class="error">Erro ao buscar a carta: ${error.message}</div>`;
+            }
+        }
+
+        function addToCollection(card) {
+            if (!myCollection.some(c => c.name === card.name && c.number === card.number)) {
+                myCollection.push(card);
+                localStorage.setItem('pokemonCollection', JSON.stringify(myCollection));
+                updateCollectionDisplay();
+                showSuccessMessage('Carta adicionada à coleção com sucesso!');
+            } else {
+                showSuccessMessage('Esta carta já está na sua coleção!');
+            }
+        }
+
+        function removeFromCollection(index) {
+            myCollection.splice(index, 1);
+            localStorage.setItem('pokemonCollection', JSON.stringify(myCollection));
+            updateCollectionDisplay();
+            showSuccessMessage('Carta removida da coleção!');
+        }
+
+        function updateCollectionDisplay() {
+            const collectionList = document.getElementById('collectionList');
+            collectionList.innerHTML = myCollection.map((card, index) => `
+                <div class="collection-card">
+                    <img src="${card.imageUrl}" alt="${card.name}">
+                    <h3>${card.name}</h3>
+                    <p>Número: ${card.number}</p>
+                    <button class="remove-btn" onclick="removeFromCollection(${index})">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        Remover
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function exportCollection() {
+            const dataStr = JSON.stringify(myCollection);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'pokemon_collection.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            showSuccessMessage('Coleção exportada com sucesso!');
+        }
+
+        function importCollection(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedCollection = JSON.parse(e.target.result);
+                        myCollection = importedCollection;
+                        localStorage.setItem('pokemonCollection', JSON.stringify(myCollection));
+                        updateCollectionDisplay();
+                        showSuccessMessage('Coleção importada com sucesso!');
+                    } catch (error) {
+                        showSuccessMessage('Erro ao importar coleção: ' + error.message, true);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function showSuccessMessage(message, isError = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = isError ? 'error' : 'success-message';
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            
+            document.querySelector('.collection-section').insertBefore(messageDiv, document.querySelector('.collection-list'));
+            
+            setTimeout(() => {
+                messageDiv.style.opacity = '0';
+                setTimeout(() => messageDiv.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 
