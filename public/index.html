@@ -291,29 +291,35 @@
             const cardContainer = document.getElementById('cardContainer');
 
             try {
-                const response = await fetch(`/api/search?name=${encodeURIComponent(name)}&number=${encodeURIComponent(number)}`);
+                const response = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:${encodeURIComponent(name)} number:${encodeURIComponent(number)}`);
                 const data = await response.json();
 
-                if (data.error) {
-                    cardContainer.innerHTML = `<div class="error">${data.error}</div>`;
-                    return;
-                }
+                if (data.data && data.data.length > 0) {
+                    const card = data.data[0];
+                    const cardData = {
+                        name: card.name,
+                        number: card.number,
+                        imageUrl: card.images.large
+                    };
 
-                cardContainer.innerHTML = `
-                    <div style="display: flex; flex-direction: column; align-items: center;">
-                        <img src="${data.imageUrl}" alt="${data.name}" class="card-image">
-                        <div class="card-info">
-                            <h2 style="color: var(--primary-color); margin-bottom: 0.5rem;">${data.name}</h2>
-                            <p style="color: #666; margin-bottom: 1rem;">Número: ${data.number}</p>
-                            <button onclick="addToCollection(${JSON.stringify(data).replace(/"/g, '&quot;')})">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                                Adicionar à Coleção
-                            </button>
+                    cardContainer.innerHTML = `
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <img src="${cardData.imageUrl}" alt="${cardData.name}" class="card-image">
+                            <div class="card-info">
+                                <h2 style="color: var(--primary-color); margin-bottom: 0.5rem;">${cardData.name}</h2>
+                                <p style="color: #666; margin-bottom: 1rem;">Número: ${cardData.number}</p>
+                                <button onclick="addToCollection(${JSON.stringify(cardData).replace(/"/g, '&quot;')})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    Adicionar à Coleção
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                } else {
+                    cardContainer.innerHTML = `<div class="error">Carta não encontrada</div>`;
+                }
             } catch (error) {
                 cardContainer.innerHTML = `<div class="error">Erro ao buscar a carta: ${error.message}</div>`;
             }
