@@ -9,6 +9,14 @@ const POKEMON_TCG_API_URL = 'https://api.pokemontcg.io/v2';
 // Servir arquivos estáticos da pasta public
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Configurar CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
 async function searchPokemonCard(name, number) {
     try {
         const response = await axios.get(`${POKEMON_TCG_API_URL}/cards`, {
@@ -34,7 +42,7 @@ async function searchPokemonCard(name, number) {
 }
 
 // Rota para buscar cartas
-app.get('/search', async (req, res) => {
+app.get('/api/search', async (req, res) => {
     try {
         const { name, number } = req.query;
         
@@ -56,6 +64,11 @@ app.get('/search', async (req, res) => {
 
 // Rota principal
 app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Rota para qualquer outra requisição
+app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 

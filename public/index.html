@@ -291,7 +291,7 @@
             const cardContainer = document.getElementById('cardContainer');
 
             try {
-                const response = await fetch(`/search?name=${encodeURIComponent(name)}&number=${encodeURIComponent(number)}`);
+                const response = await fetch(`/api/search?name=${encodeURIComponent(name)}&number=${encodeURIComponent(number)}`);
                 const data = await response.json();
 
                 if (data.error) {
